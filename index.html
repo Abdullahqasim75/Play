@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Simra, will you be my Valentine?</title>
+  <meta name="theme-color" content="#6d28d9" />
+  <meta name="description" content="A matte, classic yes-only Valentine for Simra from Abdullah." />
+  <style>
+    :root{
+      --primary:#6d28d9; /* purple-700 – matte */
+      --primary-ink:#4c1d95; /* purple-900 */
+      --accent:#7c3aed; /* purple-600 */
+      --rose:#b91c1c; /* deep red accent for classic touch */
+      --paper-1:#fbfaff; /* soft paper */
+      --paper-2:#ffffff;
+      --ink:#3b0764; /* text ink */
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; 
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      color:var(--ink);
+      background:
+        linear-gradient(180deg, rgba(109,40,217,.04), rgba(109,40,217,.02)),
+        linear-gradient(180deg, var(--paper-1), var(--paper-2));
+      overflow-x:hidden;
+    }
+    .container{ max-width: 940px; margin: 0 auto; padding: 20px; position:relative; z-index:2; }
+
+    /* Classic chips */
+    .badge-row{ display:flex; justify-content:space-between; gap:12px; align-items:center; flex-wrap:wrap; opacity:.95; }
+    .chip{ display:inline-flex; align-items:center; gap:8px; border:1px solid rgba(76,29,149,.25); color:var(--primary-ink); background:rgba(255,255,255,.9); padding:6px 10px; border-radius:999px; font-size:12px; }
+
+    /* Card with matte look */
+    .card{ background: rgba(255,255,255,.92); backdrop-filter: blur(3px); border:1px solid rgba(76,29,149,.2); border-radius:18px; box-shadow: 0 10px 24px rgba(109,40,217,.08); padding:24px; }
+
+    /* Classic touch: serif title */
+    .title{ text-align:center; font-family: Georgia, "Times New Roman", serif; letter-spacing:.3px; font-weight:800; color:var(--primary-ink); font-size: clamp(28px, 6vw, 46px); margin:8px 0 0; }
+    .subtitle{ text-align:center; color:#5b21b6; margin-top:12px; font-size: 16px }
+    .rule{ display:flex; gap:8px; align-items:center; justify-content:center; color:#6b21a8; font-size:12px; margin-top:14px; opacity:.95 }
+
+    .center{ display:flex; align-items:center; justify-content:center; min-height:70vh }
+
+    /* Buttons – matte (no gradient) */
+    .buttons{ display:flex; flex-wrap:wrap; justify-content:center; gap:12px; margin-top:28px }
+    .btn{ position:relative; border:1px solid rgba(76,29,149,.35); color:#fff; background: var(--primary); padding:12px 18px; border-radius:14px; font-weight:700; font-size:15px; box-shadow: 0 6px 14px rgba(109,40,217,.12); cursor:pointer; transition: transform .15s ease, filter .15s ease, background .2s ease; }
+    .btn:hover{ transform: translateY(-1px); filter:brightness(1.02) }
+    .outline{ background:transparent; color:var(--primary-ink); border:1px solid rgba(76,29,149,.35); box-shadow:none }
+
+    /* Date choice area */
+    .note{ margin-top:10px; color:var(--primary-ink); background: rgba(124,58,237,.06); border:1px solid rgba(76,29,149,.2); padding:12px 14px; border-radius:12px; font-size:14px }
+
+    .footer{ text-align:center; color:#6b21a8; font-size:12px; padding:16px 0 26px }
+
+    /* Floating hearts – toned down */
+    .heart{ position:fixed; bottom:-20px; left:50%; width:16px; height:16px; background:var(--accent); transform:rotate(45deg); animation: float 7s linear infinite; opacity:.5; z-index:1 }
+    .heart::before, .heart::after{ content:""; position:absolute; width:16px; height:16px; background:inherit; border-radius:50% }
+    .heart::before{ left:-8px }
+    .heart::after{ top:-8px }
+    @keyframes float{ 0%{ transform:translate(-50%,0) rotate(45deg); opacity:.0 } 12%{opacity:.5} 100%{ transform:translate(-50%,-120vh) rotate(45deg); opacity:0 } }
+
+    /* Confetti */
+    canvas#confetti{ position:fixed; inset:0; pointer-events:none; z-index:3 }
+  </style>
+</head>
+<body>
+<canvas id="confetti"></canvas>
+<div class="container">
+  <div class="badge-row" id="top-badges">
+    <span class="chip">★ A classic little note</span>
+    <span class="chip" id="countdown">☕ 00d 00h 00m</span>
+    <span class="chip">♥ Feb 14</span>
+  </div>
+
+  <div class="center">
+    <div class="card" style="width:100%">
+      <div style="display:flex; align-items:center; justify-content:center; gap:10px; color:var(--primary-ink); margin-bottom:8px">
+        <span>❀</span>
+        <span style="font-size:14px">A tiny question for <strong>Simra Zaman</strong></span>
+        <span>❀</span>
+      </div>
+      <h1 class="title">Will you be my Valentine?</h1>
+      <p id="compliment" class="subtitle">Your smile is my favorite view.</p>
+      <div class="rule">🐱 Fun rule: There isn't a "no" button today</div>
+
+      <div id="cta" class="buttons">
+        <button class="btn" onclick="acceptLove()">Yes!</button>
+        <button class="btn" onclick="acceptLove()">Absolutely yes!</button>
+        <button class="btn" onclick="acceptLove()">Fine, YES 😊</button>
+        <button class="btn outline" onclick="newCuteLine()">✨ new cute line</button>
+      </div>
+
+      <!-- Accepted state -->
+      <div id="accepted" style="display:none; margin-top:18px">
+        <div style="display:flex; align-items:center; justify-content:center; gap:8px; color:var(--primary-ink); font-weight:700; margin:10px 0 14px">
+          <span>❤</span>
+          <span>Yay! You just made my day, Simra! 💜</span>
+        </div>
+
+        <!-- Classic choices (replacing vouchers & carousel) -->
+        <div class="card" style="border-style:solid; border-color:rgba(76,29,149,.2); background:rgba(255,255,255,.92)">
+          <div style="display:flex; align-items:center; gap:8px; color:var(--primary-ink); font-weight:700; margin-bottom:8px">
+            <span>☕</span>
+            <span>Pick our 14 Feb date style</span>
+          </div>
+          <div class="buttons" style="margin-top:6px">
+            <button class="btn outline" onclick="chooseDate('Coffee')">☕ Coffee date</button>
+            <button class="btn outline" onclick="chooseDate('Pizza')">🍕 Pizza date</button>
+            <button class="btn outline" onclick="chooseDate('Biryani')">🍛 Biryani date</button>
+          </div>
+          <div id="dateConfirm" class="note" style="display:none"></div>
+        </div>
+
+        <div class="buttons" style="margin-top:20px">
+          <button class="btn" onclick="copyMessage()">🎉 Copy a cute message</button>
+          <span id="copied" class="subtitle" style="display:none; font-size:13px">Copied! Send it to her 📩</span>
+        </div>
+
+        <p class="subtitle" style="text-align:center; margin-top:10px">With love, <strong>Abdullah</strong></p>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">Made with 💖 for <strong>Simra Zaman</strong> — matte classic</div>
+</div>
+
+<script>
+  // Personalization data
+  const CONFIG = {
+    recipientName: 'Simra Zaman',
+    senderName: 'Abdullah',
+    compliments: [
+      'Your smile is my favorite view.',
+      'You make ordinary moments feel magical.',
+      'Every song is better when it’s with you.',
+      'You laugh at my terrible jokes (thanks).',
+      'I still get butterflies seeing your name pop up.'
+    ]
+  };
+
+  // Countdown to next Feb 14
+  const target = (()=>{
+    const now = new Date();
+    const y = (now.getMonth()>1 || (now.getMonth()===1 && now.getDate()>14)) ? now.getFullYear()+1 : now.getFullYear());
+    return new Date(y,1,14,0,0,0);
+  })();
+  function pad(n){return String(n).padStart(2,'0')}
+  function tick(){
+    const now = new Date();
+    const diff = Math.max(0, target.getTime() - now.getTime());
+    const d = Math.floor(diff/86400000);
+    const h = Math.floor((diff/3600000)%24);
+    const m = Math.floor((diff/60000)%60);
+    document.getElementById('countdown').textContent = `☕ ${pad(d)}d ${pad(h)}h ${pad(m)}m`;
+  }
+  setInterval(tick,1000); tick();
+
+  // Floating hearts background (toned down)
+  function spawnHeart(){
+    const h = document.createElement('div');
+    h.className = 'heart';
+    const startX = Math.random()*100; // vw
+    h.style.left = startX + 'vw';
+    h.style.animationDuration = (6 + Math.random()*5) + 's';
+    h.style.opacity = (0.35 + Math.random()*0.25);
+    document.body.appendChild(h);
+    setTimeout(()=>h.remove(), 10000);
+  }
+  setInterval(spawnHeart, 900);
+  for(let i=0;i<10;i++) setTimeout(spawnHeart, i*220);
+
+  // Compliments
+  function newCuteLine(){
+    const el = document.getElementById('compliment');
+    const next = CONFIG.compliments[Math.floor(Math.random()*CONFIG.compliments.length)];
+    el.textContent = next;
+  }
+
+  // Accept flow + confetti
+  function acceptLove(){
+    document.getElementById('cta').style.display='none';
+    document.getElementById('accepted').style.display='block';
+    fireConfetti();
+  }
+
+  // Date choice
+  function chooseDate(type){
+    const box = document.getElementById('dateConfirm');
+    const feb = new Intl.DateTimeFormat(undefined, { day:'2-digit', month:'short' }).format(new Date(target));
+    const msg = `${type} date on ${feb} it is! \nThank you for saying YES today — and to 19 Dec, and on 23 March.`;
+    box.style.display='block';
+    box.textContent = msg;
+    fireConfetti();
+  }
+
+  // Copy helper
+  async function copyMessage(){
+    const msg = `Dear ${CONFIG.recipientName}, will you be my Valentine?\n\n`+
+                document.getElementById('compliment').textContent +
+                `\n\n— ${CONFIG.senderName}`;
+    try{
+      await navigator.clipboard.writeText(msg);
+      const t = document.getElementById('copied');
+      t.style.display='inline';
+      setTimeout(()=>t.style.display='none', 1600);
+    }catch(e){ /* ignore */ }
+  }
+
+  // Lightweight confetti
+  const cnv = document.getElementById('confetti');
+  const ctx = cnv.getContext('2d');
+  let W, H, pieces=[];
+  function resize(){ W=cnv.width=window.innerWidth; H=cnv.height=window.innerHeight; }
+  window.addEventListener('resize', resize); resize();
+  function makePiece(){
+    const colors=['#a5b4fc','#6d28d9','#7c3aed','#c4b5fd','#fbcfe8'];
+    return { x:Math.random()*W, y:-20, s:5+Math.random()*7, r:Math.random()*360, v:2+Math.random()*2.2, cr: (Math.random()<.5?1:-1)*(1.5+Math.random()*2), c: colors[Math.floor(Math.random()*colors.length)] };
+  }
+  function fireConfetti(){ for(let i=0;i<100;i++) pieces.push(makePiece()); }
+  function step(){
+    ctx.clearRect(0,0,W,H);
+    pieces = pieces.filter(p=>p.y<H+30);
+    for(const p of pieces){
+      p.y += p.v; p.r += p.cr; p.x += Math.sin(p.y/38)*1.1;
+      ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.r*Math.PI/180);
+      ctx.fillStyle=p.c; ctx.fillRect(-p.s/2,-p.s/2,p.s,p.s); ctx.restore();
+    }
+    requestAnimationFrame(step);
+  }
+  step();
+</script>
+</body>
+</html>
